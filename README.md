@@ -1,3 +1,3 @@
 # Delivery-Food
-Food Delivery Site
+Food Delivery Site.
 Intensive from Glo Academy
