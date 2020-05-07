@@ -201,3 +201,11 @@ checkAuth();
 createCardRestaurant();
 createCardRestaurant();
 createCardRestaurant();
+
+new Swiper('.swiper-container', {
+   autoplay: {
+      delay : 3000
+  },
+  loop: true,
+  speed: 1800,
+})
