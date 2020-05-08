@@ -181,6 +181,10 @@ body {
    text-decoration: none; 
 }
 
+.card-restaurant {
+   cursor: pointer
+}
+
 .card-image {
    width: 100%;
    height: 250px;
@@ -194,10 +198,14 @@ body {
 }
 
 .card-text {
-   padding-top: 20px;
-   padding-bottom: 35px;
-   padding-left: 23px;
-   padding-right: 23px;
+   padding: 20px 23px 35px;
+   min-height: 275px;
+   display: flex;
+   flex-direction: column;
+}
+
+.restaurants .card-text {
+   min-height: auto;
 }
 
 .card-heading {
@@ -240,8 +248,9 @@ body {
 
 .card-buttons {
    display: flex;
-   align-items: center;
    margin-top: 24px;
+   flex-grow: 1;
+   align-items: flex-end;
 }
 
 .card-price-bolt {
@@ -607,6 +616,9 @@ body {
    .container {
       max-width: 560px;
    }
+   .card-text {
+      min-height: 290px;
+   }
    .button {
       font-size: 15px;
       padding: 8px 5px;
@@ -706,6 +718,9 @@ body {
    }
    .card {
       flex-basis: 100%
+   }
+   .card-text {
+      min-height: auto;
    }
    .card-image {
       width: 100%;
