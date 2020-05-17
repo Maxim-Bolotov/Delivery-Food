@@ -31,39 +31,42 @@ const category = document.querySelector('.category');
 
 let login = localStorage.getItem('myUsers');
 
-const cart = [];
+let cart = [];
+
+const loadCart = () => {
+
+   if(localStorage.getItem(login)) {
+
+      JSON.parse(localStorage.getItem(login)).forEach(function(item){
+
+         return cart.push(item);
+      })
+   }
+}
+
+const saveCart = () => localStorage.setItem(login, JSON.stringify(cart));
+
 
 // База данных
-const getData = async function(url) {
+const getData = async (url) => {
 
    const response = await fetch(url);
-
-   if(!response.ok){
-      throw new Error(`Ошибка по адресу ${url}, статус ошибки ${response.status}!`);
-   }
-
+   if(!response.ok) throw new Error(`Ошибка по адресу ${url}, статус ошибки ${response.status}!`);
    return await response.json(); 
 };
 
 // Валидация логина
-const valid = function(str){
+const valid = (str) => {
 
    const nameReg = /^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$/;
    return nameReg.test(str);
 };
 
 // Проверка авторизации
-function checkAuth() {
-
-   if(login) {
-      authorized();
-   } else {
-      notAuthorized();
-   }
-}
+let checkAuth =() => login ? authorized() : notAuthorized();
 
 // Модальное окно авторизации
-function toggleModalAuth() {
+let toggleModalAuth = () => {
 
    modalAuth.classList.toggle('is-open');
    loginInput.style.borderColor = '';
@@ -71,17 +74,16 @@ function toggleModalAuth() {
 }
 
 // Модальное окно корзины
-function toggleModal() {
+let toggleModal = () => modal.classList.toggle('is-open');
 
-   modal.classList.toggle('is-open');
-}
 
 // Авторизован
-function authorized() {
+let authorized = () => {
 
-   function logOut() {
+   let logOut = () => {
 
       login = null;
+      cart = [];
       localStorage.removeItem('myUsers');
       buttonAuth.style.display = '';
       userName.style.display = '';
@@ -101,13 +103,15 @@ function authorized() {
    cartButton.style.display= 'flex';
 
    buttonOut.addEventListener('click', logOut);
+
+   loadCart();
 }
 
 // Не авторизован
-function notAuthorized() {
+let notAuthorized = () => {
    console.log('Не авторизован');
 
-   function logIn(event) {
+   let logIn = (event) => {
 
       event.preventDefault();
 
@@ -127,7 +131,6 @@ function notAuthorized() {
          loginInput.style.borderColor = 'red';
          loginInput.placeholder = 'Введен неверный логин';
       }
-
    }
 
    closedFoods()
@@ -138,7 +141,7 @@ function notAuthorized() {
 }
 
 // Рестораны
-function createCardRestaurant({ image, kitchen, name, price, products, stars, time_of_delivery: timeOfDelivery }) {
+let createCardRestaurant = ({ image, kitchen, name, price, products, stars, time_of_delivery: timeOfDelivery }) => {
 
    const card = document.createElement('a');
    card.className = 'card card-restaurant';
@@ -165,7 +168,7 @@ function createCardRestaurant({ image, kitchen, name, price, products, stars, ti
 }
 
 // Меню
-function createCardFood({ description, id, image, name, price }) {
+let createCardFood = ({ description, id, image, name, price }) => {
 
    const card = document.createElement('div');
    card.className = 'card';
@@ -194,11 +197,11 @@ function createCardFood({ description, id, image, name, price }) {
 }
 
 // Переход в меню ресторана
-function openFoods(event) {
+let openFoods = (event) => {
 
    const target = event.target;
 
-   if(login){
+   if(login) {
 
       const restaurant = target.closest('.card');
 
@@ -228,7 +231,7 @@ function openFoods(event) {
 }
 
 // Возврат к ресторанам
-function closedFoods() {
+let closedFoods = () => {
 
    containerPromo.classList.remove('hide');
    restaurants.classList.remove('hide');
@@ -237,11 +240,11 @@ function closedFoods() {
 }
 
 // Создать корзину
-function renderCart() {
+let renderCart = () => {
 
    modalbody.textContent = '';
 
-   cart.forEach(function({ id, title, cost, count }) {
+   cart.forEach(({ id, title, cost, count }) => {
 
       const itemCart = `
          <div class="food-row">
@@ -260,15 +263,13 @@ function renderCart() {
       modalbody.insertAdjacentHTML('afterbegin', itemCart);
    });
 
-   const totalPrice = cart.reduce(function(result, item) {
-      return result + (parseFloat(item.cost) * item.count);
-   }, 0);
+   const totalPrice = cart.reduce((result, item) => result + (parseFloat(item.cost) * item.count), 0);
 
    modalPrice.textContent = totalPrice + ' ₽';
 }
 
 // Добавление товара в корзину
-function addToCart(event) {
+let addToCart = (event) => {
 
    const target = event.target;
    const buttonAddToCard = target.closest('.button-primary');
@@ -280,27 +281,16 @@ function addToCart(event) {
       const cost = card.querySelector('.card-price').textContent;
       const id = card.id;
 
-      const food = cart.find(function(item){
-         return item.id === id;
-      })
+      const food = cart.find((item) => item.id === id);
 
-      if(food) {
-
-         food.count += 1;
-      } else {
-
-         cart.push({
-            id,
-            title,
-            cost,
-            count: 1
-         });
-      }
+      food ? food.count += 1 : cart.push({ id, title, cost, count: 1 });
    }
+
+   saveCart();
 }
 
 // Количество товара
-function chengeCount(event) {
+let chengeCount = (event) => {
 
    const target = event.target;
 
@@ -321,17 +311,16 @@ function chengeCount(event) {
 
       renderCart();
    }
+
+   saveCart();
 }
 
 // Запуск 
-function init() {
+let init = () => {
 
-   getData('./db/partners.json').then(function(data){
-
-      data.forEach(createCardRestaurant);
-   });
+   getData('./db/partners.json').then((data) => data.forEach(createCardRestaurant));
    
-   cartButton.addEventListener('click', function(){
+   cartButton.addEventListener('click', () => {
 
       renderCart();
       toggleModal();
@@ -343,7 +332,7 @@ function init() {
    cardsMenu.addEventListener('click', addToCart);
    logo.addEventListener('click', closedFoods);
 
-   buttonClearCart.addEventListener('click', function() {
+   buttonClearCart.addEventListener('click', () => {
 
       cart.length = 0;
       toggleModal();
