@@ -468,13 +468,8 @@ body {
    flex-direction: row;
    align-items: center;
    justify-content: center;
-}
-
-.price-span {
-   font-weight: bold;
-   font-size: 20px;
-   line-height: 23px;
    color: #FAFAFA;
+   
 }
 
 .price-block {
